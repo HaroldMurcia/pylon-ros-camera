@@ -287,7 +287,7 @@ For faster USB transfers you should increase the packet size. You can do this by
 This would assign a maximum of 1000 MB to the USB stack.
 
 
-## My notes about this repo wotking with cA1440 -220uc
+## My notes about this repo working with basler acA1440 -220uc
 
 ### Info:
 
