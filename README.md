@@ -285,3 +285,56 @@ The GigE Vision implementation of Basler pylon software uses a thread for receiv
 For faster USB transfers you should increase the packet size. You can do this by changing the "Stream Parameters" -> "Maximum Transfer Size" value from inside the pylon Viewer or by setting the corresponding value via the API. After increasing the package size you will likely run out of kernel space and see corresponding error messages on the console. The default value set by the kernel is 16 MB. To set the value (in this example to 1000 MB) you can execute as root:
 `echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb`
 This would assign a maximum of 1000 MB to the USB stack.
+
+
+## My notes about this repo wotking with cA1440 -220uc
+
+### Info:
+
+* [ROS driver](https://github.com/basler/pylon-ros-camera/tree/master/pylon_camera)
+* [official site](https://docs.baslerweb.com/aca1440-220uc)
+
+
+compiling this package gave me some problems. After trying several configurations this is what worked for me:
+1. install pylon software 7.3 and codemeter 7.4 from Basler website: [pylon_7.3.0.27189_linux-x86_64_debs.tar.gz](https://www2.baslerweb.com/en/downloads/software-downloads/software-pylon-7-3-0-linux-x86-64bit-debian/)
+2. Clone the repos:
+```
+cd ~/catkin_ws 
+git clone https://github.com/basler/pylon-ros-camera 
+git clone https://github.com/dragandbot/dragandbot_common.git
+```
+3. Modify the file /catkin_ws/src/pylon-ros-camera/pylon_camera/CMakeLists.txt replacing:
+```
+find_package(Pylon QUIET)
+if (NOT ${Pylon_FOUND})
+    include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindPylon.cmake")
+endif()
+```
+with:
+```
+set(Pylon_INCLUDE_DIRS "/opt/pylon/include")
+set(Pylon_LIBRARY_DIRS "/opt/pylon/lib")
+set(Pylon_LIBRARIES "pylonbase" "pylonc" "pylonbase.so.7.3" "pylonc.so.7.3")
+
+# Verificar si las rutas son válidas (opcional)
+if(EXISTS ${Pylon_INCLUDE_DIRS} AND EXISTS ${Pylon_LIBRARY_DIRS})
+    set(Pylon_FOUND TRUE)
+else()
+    set(Pylon_FOUND FALSE)
+endif()
+
+if (NOT ${Pylon_FOUND} OR "$ENV{Pylon_INCLUDE_DIRS}" STREQUAL "")
+    include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindPylon.cmake")
+endif()
+```
+
+#### Additional Trigger info
+[Configuring trigger](https://docs.baslerweb.com/triggered-image-acquisition)
+
+Don't trigger the camera at a rate that exceeds one or both of the following limiting factors:
+
+* The maximum allowed frame rate for the current camera settings. If you apply trigger signals to the camera when it is not ready to receive them, the signals will be ignored.
+* The host computer's capacity limits for data transfer, storage, or both. If you try to acquire more images than the host computer is able to process, frames may be dropped.
+
+### How to launch:
+roslaunch pylon_camera pylon_camera_node.launch

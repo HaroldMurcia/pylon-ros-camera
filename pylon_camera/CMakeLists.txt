@@ -17,10 +17,23 @@ set(
      sensor_msgs
 )
 
-find_package(Pylon QUIET)
-if (NOT ${Pylon_FOUND})
+# Reemplazar la búsqueda de Pylon con la ruta binaria conocida
+set(Pylon_INCLUDE_DIRS "/opt/pylon/include")
+set(Pylon_LIBRARY_DIRS "/opt/pylon/lib")
+set(Pylon_LIBRARIES "pylonbase" "pylonc" "pylonbase.so.7.3" "pylonc.so.7.3")
+
+# Verificar si las rutas son válidas (opcional)
+if(EXISTS ${Pylon_INCLUDE_DIRS} AND EXISTS ${Pylon_LIBRARY_DIRS})
+    set(Pylon_FOUND TRUE)
+else()
+    set(Pylon_FOUND FALSE)
+endif()
+
+if (NOT ${Pylon_FOUND} OR "$ENV{Pylon_INCLUDE_DIRS}" STREQUAL "")
     include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindPylon.cmake")
 endif()
+
+
 find_package(
     catkin REQUIRED
     COMPONENTS
