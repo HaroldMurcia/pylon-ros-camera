@@ -294,6 +294,10 @@ This would assign a maximum of 1000 MB to the USB stack.
 * [ROS driver](https://github.com/basler/pylon-ros-camera/tree/master/pylon_camera)
 * [official site](https://docs.baslerweb.com/aca1440-220uc)
 
+* pre-requisites:
+```
+sudo apt install ros-noetic-cv-bridge ros-noetic-camera-info-manager ros-noetic-image-geometry
+```
 
 compiling this package gave me some problems. After trying several configurations this is what worked for me:
 1. install pylon software 7.3 and codemeter 7.4 from Basler website: [pylon_7.3.0.27189_linux-x86_64_debs.tar.gz](https://www2.baslerweb.com/en/downloads/software-downloads/software-pylon-7-3-0-linux-x86-64bit-debian/)
